@@ -1,0 +1,3 @@
+rootProject.name = 'YahooWeather'
+
+include ':app'
