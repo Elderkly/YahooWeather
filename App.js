@@ -8,7 +8,7 @@
  */
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, View,ToastAndroid} from 'react-native';
 
 import codePush from 'react-native-code-push'
 
@@ -21,11 +21,22 @@ export default class App extends Component<Props> {
   checkCodePushVersion() {
     codePush.sync({
           updateDialog: {
-            appendReleaseDescription: true,          //true表示显示更新信息，如果为false就不会提示用户直接下载
+            //是否显示更新描述
+            appendReleaseDescription: true,
+            //更新描述的前缀。 默认为"Description"
             descriptionPrefix: '\n更新内容：\n',
+            //Alert窗口的标题
             title: '有新的更新包',
-            mandatoryUpdateMessage: '',
+            //强制更新时，检查到更新的消息文本
+            mandatoryUpdateMessage: '有新的贼啦酷炫的更新，不更新就别用',
+            //强制更新按钮文字，默认为continue
             mandatoryContinueButtonLabel: '更新',
+            //非强制更新时，按钮文字,默认为"ignore"
+            optionalIgnoreButtonLabel : '稍后',
+            //非强制更新时，确认按钮文字. 默认为"Install"
+            optionalInstallButtonLabel : '后台更新',
+            //非强制更新时，检查到更新的消息文本
+            optionalUpdateMessage : '有新的贼啦酷炫的更新' ,
           },
           mandatoryInstallMode: codePush.InstallMode.ON_NEXT_RESTART,     //更新模式
           deploymentKey: '9037GPrqx0XMdFpze5YHm-WU1bHw8a819c0d-0e67-4356-a30e-a58b089a63bf',     //你自己配置的key，打包时使用到的DEPLOYMENTKEY
@@ -36,10 +47,10 @@ export default class App extends Component<Props> {
   //code-push的状态监听
   codePushStatusDidChange(status) {
     switch (status) {
-      case codePush.SyncStatus.CHECKING_FOR_UPDATE:
+      case codePush.SyncStatus.CHECKING_FOR_UPDATE:  // 检测更新
         console.log("Checking for updates.");
         break;
-      case codePush.SyncStatus.DOWNLOADING_PACKAGE:
+      case codePush.SyncStatus.DOWNLOADING_PACKAGE:  // 安装更新
         console.log("Downloading package.");
         break;
       case codePush.SyncStatus.INSTALLING_UPDATE:
@@ -62,7 +73,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>Yahoooooooooooooooooooooo</Text>
+        <Text style={styles.welcome}>YahooWeather</Text>
       </View>
     );
   }
