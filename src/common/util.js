@@ -31,3 +31,7 @@ export function isIphoneX() {
     console.log(IsX)
     return IsX
 }
+
+export function getStatusBarHeight() {
+    return Platform.OS === 'android' || isIphoneX() ? 24 : 10
+}

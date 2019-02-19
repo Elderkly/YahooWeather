@@ -12,6 +12,7 @@ import {StyleSheet, Text} from 'react-native';
 
 import codePush from './config/codePush'
 
+// import DrawerNavigator from './config/badRouter'
 import DrawerNavigator from './config/AppRouter'
 
 type Props = {};
