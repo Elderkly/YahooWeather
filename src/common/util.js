@@ -28,10 +28,13 @@ export function isIphoneX() {
 
     //目前iPhone X序列手机的适配算法：高宽比先转换为字符串，截取前三位，转换为number类型 再乘以100
     const IsX = Platform.OS === 'ios' && (Number(height / width) + "").substr(0,4) * 100 === 216
-    console.log(IsX)
     return IsX
 }
 
 export function getStatusBarHeight() {
     return Platform.OS === 'android' || isIphoneX() ? 24 : 10
+}
+
+export function getNavigationBarHeight() {
+    return Platform.OS === 'android' ? 70 : isIphoneX() ? 64 : 44
 }
