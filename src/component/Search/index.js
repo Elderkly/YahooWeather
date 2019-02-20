@@ -1,14 +1,56 @@
 
 import React, {Component} from 'react';
-import {StyleSheet, Text, TouchableOpacity, TextInput,View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, TextInput,View,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {getStatusBarHeight} from '../../common/util'
-
+import city from '../../assets/json/_city'
 
 type Props = {};
 export default class Search extends Component<Props> {
     state = {
-        value:null
+        value:null,
+        searchView:null
+    }
+    changText(text) {
+        this.setState({
+            value:text,
+            searchView:text ? this.renderLoadingDom() : null
+        })
+        this.searchCity(text)
+    }
+    renderLoadingDom() {
+        return (
+            <View style={{marginVertical: 30,alignItems:'center'}}>
+                <ActivityIndicator size="large" color={'#fff'}></ActivityIndicator>
+            </View>
+        )
+    }
+    renderCityDom(data) {
+        return (
+            <TouchableOpacity
+                style={styles.items}
+            >
+                <Text style={{color:'#fff', fontSize: 17, fontWeight: '300'}}>{data.city_name}</Text>
+            </TouchableOpacity>
+        )
+    }
+    searchCity(text) {
+        for (let x = 0;x < city.length;x++) {
+            if (text === city[x].city_name) {
+                console.log(city[x])
+                this.setState({
+                    value:text,
+                    searchView:this.renderCityDom(city[x])
+                })
+                return
+            }
+            if (x === city.length - 1) {
+                setTimeout(() => {this.setState({
+                    searchView:null
+                })},600)
+                return
+            }
+        }
     }
     render() {
         return (
@@ -18,14 +60,14 @@ export default class Search extends Component<Props> {
                     <TextInput
                         style={styles.input}
                         value={this.state.value}
-                        onChangeText={(text) => this.setState({value:text})}
+                        onChangeText={(text) => this.changText(text)}
                         keyboardAppearance={'dark'}
                         autoFocus={true}
                     ></TextInput>
                     {
                         !this.state.value ? null :
                             <TouchableOpacity
-                                onPress={() => this.setState({value:null})}
+                                onPress={() => this.setState({value:null,searchView:null})}
                                 style={{marginHorizontal:5}}
                             >
                                 <Icon name='ios-close-circle' color={'rgb(57,57,57)'} size={22}/>
@@ -38,6 +80,7 @@ export default class Search extends Component<Props> {
                         <Text style={{color:'#fff',fontSize:18,fontWeight: '300'}}>取消</Text>
                     </TouchableOpacity>
                 </View>
+                {this.state.searchView}
             </View>
         );
     }
@@ -53,5 +96,12 @@ const styles = StyleSheet.create({
         color:'#fff',
         fontSize: 18,
         fontWeight: '300'
+    },
+    items:{
+        paddingLeft:10,
+        paddingVertical:10,
+        borderBottomWidth:1,
+        borderColor:'rgb(57,57,57)',
+        marginHorizontal:5
     }
 });
