@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl} from 'react-native';
-import {getNavigationBarHeight} from '../../common/util'
+import {getNavigationBarHeight,getRandomImg} from '../../common/util'
 
 const ViewHeight = Dimensions.get('window').height - getNavigationBarHeight()
 
@@ -113,11 +113,19 @@ export default class HomeScrollView extends Component<Props> {
         this.setState({
             refreshing:true
         })
-        setTimeout(() => {
-            this.setState({
-                refreshing:false
+        getRandomImg()
+            .then(res=>{
+                this.props.getImgUrl(res)
+                this.setState({
+                    refreshing:false
+                })
             })
-        },600)
+            .catch(e => {
+                console.log('图片请求失败',e)
+                this.setState({
+                    refreshing:false
+                })
+            })
     }
     render () {
         return (

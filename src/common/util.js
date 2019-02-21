@@ -38,3 +38,17 @@ export function getStatusBarHeight() {
 export function getNavigationBarHeight() {
     return Platform.OS === 'android' ? 70 : isIphoneX() ? 64 : 44
 }
+
+export function getRandomImg() {
+    return new Promise((resolve,reject) => {
+        fetch('https://api.neweb.top/bing.php?type=rand')
+            .then(res => {
+                // console.log('壁纸',res.url)
+                resolve(res.url)
+            })
+            .catch(e => {
+                reject(e)
+            })
+    })
+
+}
