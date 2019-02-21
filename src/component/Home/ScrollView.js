@@ -128,6 +128,7 @@ export default class HomeScrollView extends Component<Props> {
             })
     }
     render () {
+        const data = this.props.Items
         return (
             <ScrollView
                 style={{flex:1}}
@@ -141,26 +142,41 @@ export default class HomeScrollView extends Component<Props> {
                         onRefresh={this._onRefresh}
                     />
                 }
+                contentContainerStyle={styles.scrollView}
             >
-                <View style={styles.firstView}>
-                    <Text style={{fontSize:50,color:'#fff'}} ref={'title'}>123</Text>
-                </View>
-                <View style={{height:500,backgroundColor:'rgba(255,255,225,.2)'}}>
-                    <Text>456</Text>
-                </View>
-                <View style={{backgroundColor:'rgba(255,255,225,7)',height:500,}}>
-                    <Text>789</Text>
-                </View>
+                {
+                    data ?
+                        <View>
+                            <View style={styles.firstView}>
+                                <Text style={styles.h1} ref={'title'}>{data.data.wendu}°</Text>
+                            </View>
+                            <View style={{height:500,backgroundColor:'rgba(255,255,225,.2)'}}>
+                                <Text>456</Text>
+                            </View>
+                            <View style={{backgroundColor:'rgba(255,255,225,7)',height:500,}}>
+                                <Text>789</Text>
+                            </View>
+                        </View>
+                        : null
+                }
+
             </ScrollView>
         )
     }
 }
 
 const styles = StyleSheet.create({
+    h1:{
+      fontSize:100,
+      color:'#fff',
+      fontWeight: '100'
+    },
     firstView:{
         justifyContent:'flex-end',
         height:ViewHeight,
         alignItems:'flex-start',
-        // backgroundColor:'rgba(255,255,255,.8)'
+    },
+    scrollView:{
+        paddingHorizontal:15
     }
 })

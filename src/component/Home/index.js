@@ -12,7 +12,8 @@ type Props = {};
 export default class Home extends Component<Props> {
     state = {
         MaskOpacity:0,
-        imgUrl:null
+        imgUrl:null,
+        items:null
     }
 
     // 显示或隐藏侧边菜单(抽屉)
@@ -60,23 +61,29 @@ export default class Home extends Component<Props> {
     componentWillMount(){
         HttpRequest.get('http://t.weather.sojson.com/api/weather/city/101280601')
             .then(res => {
-                console.log(res)
+                // console.log(res)
+                this.setState({items:res})
             })
         this.getBgImgUrl()
     }
 
+    //  写入图片缓存
     setBgImgUrl(url){
         AsyncStorage.setItem('bgImg',JSON.stringify({url:url,Time:new Date().getTime()}),error => {
             !error ? this.setState({imgUrl:url}) : console.log('写入缓存失败',error)
         })
     }
+
+    //  读取图片缓存
     getBgImgUrl(){
         AsyncStorage.getItem('bgImg',(error,res) => {
             const url = 'https://castle.womany.net/images/content/pictures/29362/content_womany_slide_340176_3496701_free_1432883330-23387-6973.jpg'
             if (!error && res) {
                 const data = JSON.parse(res)
-                const time = -(data.Time - new Date().getTime())  / 1000 / 60 % 60
+                const time = (new Date().getTime() - data.Time)  / 1000 / 60 % 60
+                console.log('距离上一次刷新背景图片已经过去',time,'分钟')
                 if (time > 5) {
+                    console.log('刷新图片')
                     getRandomImg()
                         .then(res=>{
                             this.setState({imgUrl:res})
@@ -89,13 +96,13 @@ export default class Home extends Component<Props> {
                 } else {
                     this.setState({imgUrl:data.url})
                 }
-                // console.log(time)
             } else {
                 this.setState({imgUrl:url})
                 this.setBgImgUrl(url)
             }
         })
     }
+
     render() {
         return (
             <ImageBackground
@@ -104,9 +111,9 @@ export default class Home extends Component<Props> {
             >
                 <View style={{flex:1,backgroundColor:`rgba(0,0,0,${this.state.MaskOpacity})`}}>
                     <NavigationBar
-                        title={'YahooWeather'}
+                        title={'深圳市'}
                         style={{
-                            backgroundColor:'rgb(0,0,0,0)'
+                            backgroundColor:`rgb(0,0,0,${this.state.MaskOpacity}))`
                         }}
                         leftButton={<TouchableOpacity
                             style={{marginLeft:15}}
@@ -119,6 +126,7 @@ export default class Home extends Component<Props> {
                         rightButton={this.renderRightButton()}
                     />
                     <ScrollView
+                        Items={this.state.items}
                         onScroll={scrollY => {
                             const ViewHeight = Dimensions.get('window').height - getNavigationBarHeight()
                             this.setState({MaskOpacity:Math.min(scrollY / ViewHeight,.7) })
