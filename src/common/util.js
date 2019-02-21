@@ -32,11 +32,11 @@ export function isIphoneX() {
 }
 
 export function getStatusBarHeight() {
-    return Platform.OS === 'android' || isIphoneX() ? 24 : 10
+    return Platform.OS === 'android' || isIphoneX() ? 50 : 10
 }
 
 export function getNavigationBarHeight() {
-    return Platform.OS === 'android' ? 70 : isIphoneX() ? 64 : 44
+    return Platform.OS === 'android' ? 70 : isIphoneX() ? 84 : 44
 }
 
 export function getRandomImg() {

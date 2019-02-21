@@ -1,5 +1,5 @@
 // import Icon from 'react-native-vector-icons'
-import {createDrawerNavigator,createAppContainer,createStackNavigator} from 'react-navigation'
+import {createAppContainer,createStackNavigator} from 'react-navigation'
 
 import Home from '../component/Home'
 import Search from '../component/Search'

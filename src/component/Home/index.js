@@ -12,7 +12,7 @@ type Props = {};
 export default class Home extends Component<Props> {
     state = {
         MaskOpacity:0,
-        imgUrl:null,
+        imgUrl:'https://castle.womany.net/images/content/pictures/29362/content_womany_slide_340176_3496701_free_1432883330-23387-6973.jpg',
         items:null
     }
 
