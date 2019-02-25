@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl} from 'react-native';
 import {getNavigationBarHeight,getRandomImg} from '../../common/util'
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import {Weather} from '../../assets/json/weather'
 
 const ViewHeight = Dimensions.get('window').height - getNavigationBarHeight()
 
@@ -127,8 +129,34 @@ export default class HomeScrollView extends Component<Props> {
                 })
             })
     }
+    //  提取天气数据中的数字
+    renderNumber(str) {
+        return parseInt(str.substring(1).substring(1).substring(1))
+    }
+    renderWeatherList(list) {
+        const obj = []
+        console.log(list)
+        list.map(e => {
+            obj.push(
+                <View
+                    key={e.date}
+                    style={styles.items}
+                >
+                    <Text style={styles.items_text}>{e.week}</Text>
+                    <View style={{flex:1,alignItems: 'center'}}>
+                        <Icon name={Weather[e.type]} style={{fontSize: 24}} color={'#fff'}/>
+                    </View>
+                    <Text style={styles.items_text}>{this.renderNumber(e.high)}°</Text>
+                    <Text style={styles.items_blue_text}>{this.renderNumber(e.low)}°</Text>
+                </View>
+            )
+        })
+        return obj
+        // console.log(obj)
+    }
     render () {
         const data = this.props.Items
+        // console.log(Weather,data.data.forecast[0].type)
         return (
             <ScrollView
                 style={{flex:1}}
@@ -148,10 +176,23 @@ export default class HomeScrollView extends Component<Props> {
                     data ?
                         <View>
                             <View style={styles.firstView}>
-                                <Text style={styles.h1} ref={'title'}>{data.data.wendu}°</Text>
+                                <View style={styles.RowView}>
+                                    <Icon name={Weather[data.data.forecast[0].type]} style={{fontSize: 24}} color={'#fff'}/>
+                                    <Text style={styles.text}>{data.data.forecast[0].type}</Text>
+                                </View>
+                                <View style={styles.RowView}>
+                                    <Icon name={'angle-double-up'} style={{fontSize: 24}} color={'#fff'}/>
+                                    <Text style={styles.text}>{this.renderNumber(data.data.forecast[0].high)}°</Text>
+                                    <Icon name={'angle-double-down'} style={{fontSize: 24}} color={'#fff'}/>
+                                    <Text style={styles.text}>{this.renderNumber(data.data.forecast[0].low)}°</Text>
+                                </View>
+                                 <Text style={styles.h1} ref={'title'}>{data.data.wendu}°</Text>
                             </View>
-                            <View style={{height:500,backgroundColor:'rgba(255,255,225,.2)'}}>
-                                <Text>456</Text>
+                            <View style={{backgroundColor:'rgba(0,0,0,.5)',paddingHorizontal: 10,borderRadius:5}}>
+                                <View style={styles.titleView}>
+                                    <Text style={styles.title}>预报</Text>
+                                </View>
+                                {this.renderWeatherList(data.data.forecast)}
                             </View>
                             <View style={{backgroundColor:'rgba(255,255,225,7)',height:500,}}>
                                 <Text>789</Text>
@@ -167,16 +208,56 @@ export default class HomeScrollView extends Component<Props> {
 
 const styles = StyleSheet.create({
     h1:{
-      fontSize:100,
+      fontSize:120,
       color:'#fff',
-      fontWeight: '100'
+      fontWeight: '100',
+      marginTop:-35
     },
     firstView:{
         justifyContent:'flex-end',
         height:ViewHeight,
         alignItems:'flex-start',
+        marginHorizontal: 10
     },
     scrollView:{
-        paddingHorizontal:15
+        paddingHorizontal:5
+    },
+    RowView:{
+        flexDirection:'row',
+        marginBottom:8,
+        paddingLeft:8
+    },
+    text:{
+        color:'#fff',
+        fontSize:20,
+        marginHorizontal:20
+    },
+    items:{
+        flexDirection: 'row',
+        paddingVertical:10,
+        borderBottomWidth:.5,
+        paddingHorizontal:5,
+        borderColor:'rgba(255,255,255,.8)',
+        borderStyle:'dashed'
+    },
+    items_text:{
+        fontSize:22,
+        color:'#fff'
+    },
+    items_blue_text:{
+        fontSize:22,
+        color:'rgb(160,176,250)',
+        marginLeft:20
+    },
+    titleView:{
+        marginVertical:5,
+        borderBottomWidth: .5,
+        borderColor: '#fff',
+        paddingVertical: 5
+    },
+    title:{
+        fontSize:28,
+        color:'#fff'
     }
+
 })
