@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl} from 'react-native';
+import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl,ActivityIndicator} from 'react-native';
 import {getNavigationBarHeight,getRandomImg} from '../../common/util'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Weather} from '../../assets/json/weather'
+import {Echarts, echarts} from 'react-native-secharts';
 
 const ViewHeight = Dimensions.get('window').height - getNavigationBarHeight()
 
@@ -14,7 +15,24 @@ export default class HomeScrollView extends Component<Props> {
             refreshing:false,
             startMoveY:null,
             ScrollAdsorbent:'bottom',
-            middleHeight:null   //  滚动吸附
+            middleHeight:null,   //  滚动吸附
+            weatherList:[],
+            option1: {              //  图表数据
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                },
+                yAxis: {
+                    // type: 'value'
+                },
+                color: '#fff',
+                series: [{
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line',
+                    areaStyle: {}
+                }]
+            },
         }
     }
     onScroll(e) {
@@ -56,7 +74,7 @@ export default class HomeScrollView extends Component<Props> {
                         this.refs.scrollView.scrollTo({y:0,animated:true})
                         this.setState({ScrollAdsorbent:'bottom'})
                     } else {
-                        this.refs.scrollView.scrollTo({y:middleHeight,animated:true})
+                        // this.refs.scrollView.scrollTo({y:middleHeight,animated:true})
                     }
                 } else {    //  位置在中间或以上 即已经是吸附状态
                     if (
@@ -135,7 +153,6 @@ export default class HomeScrollView extends Component<Props> {
     }
     renderWeatherList(list) {
         const obj = []
-        console.log(list)
         list.map(e => {
             obj.push(
                 <View
@@ -152,8 +169,19 @@ export default class HomeScrollView extends Component<Props> {
             )
         })
         return obj
-        // console.log(obj)
     }
+    onPress = (e) => {
+        console.log(123)
+    }
+    renderCharts() {
+        return <View><Echarts ref="echarts1" option={this.state.option1} onPress={this.onPress} height={300} /></View>
+    }
+
+    componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+        console.log(this.props.Items)
+        this.state.weatherList.length < 1 && this.props.Items ? this.setState({weatherList:this.props.Items.data.forecast.slice(0,7)}) : null
+    }
+
     render () {
         const data = this.props.Items
         // console.log(Weather,data.data.forecast[0].type)
@@ -192,7 +220,33 @@ export default class HomeScrollView extends Component<Props> {
                                 <View style={styles.titleView}>
                                     <Text style={styles.title}>预报</Text>
                                 </View>
-                                {this.renderWeatherList(data.data.forecast)}
+                                {this.renderCharts()}
+                                {
+                                    this.state.weatherList.length > 0 ?
+                                        this.renderWeatherList(this.state.weatherList)
+                                        : <ActivityIndicator size="large" color={'#fff'}></ActivityIndicator>
+                                }
+                                <View style={{flexDirection:'row',marginVertical: 10}}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            this.setState({
+                                                weatherList:data.data.forecast.slice(0,7)
+                                            })
+                                        }}
+                                    >
+                                        <Text style={styles.bottomViewText}>7天</Text>
+                                    </TouchableOpacity>
+                                    <Text style={{color:'#fff',fontSize:14,marginHorizontal:10}}>|</Text>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            this.setState({
+                                                weatherList:data.data.forecast.slice(0,14)
+                                            })
+                                        }}
+                                    >
+                                        <Text style={styles.bottomViewText}>14天</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                             <View style={{backgroundColor:'rgba(255,255,225,7)',height:500,}}>
                                 <Text>789</Text>
@@ -257,6 +311,10 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize:28,
+        color:'#fff'
+    },
+    bottomViewText:{
+        fontSize:16,
         color:'#fff'
     }
 

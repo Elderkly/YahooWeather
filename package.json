@@ -14,7 +14,9 @@
     "react-native": "0.58.4",
     "react-native-code-push": "^5.5.2",
     "react-native-gesture-handler": "^1.0.15",
+    "react-native-secharts": "^1.6.1",
     "react-native-vector-icons": "^6.3.0",
+    "react-native-webview": "^5.2.1",
     "react-navigation": "^3.3.0",
     "teaset": "^0.6.3"
   },
