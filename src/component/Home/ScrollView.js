@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl,ActivityIndicator} from 'react-native';
+import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl,Animated} from 'react-native';
 import {getNavigationBarHeight,getRandomImg} from '../../common/util'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Weather} from '../../assets/json/weather'
@@ -16,22 +16,9 @@ export default class HomeScrollView extends Component<Props> {
             startMoveY:null,
             ScrollAdsorbent:'bottom',
             middleHeight:null,   //  滚动吸附
-            weatherList:[],
+            fadeHeight:new Animated.Value(350), // 动画高度
             option1: {              //  图表数据
-                xAxis: {
-                    type: 'category',
-                    boundaryGap: false,
-                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                },
-                yAxis: {
-                    // type: 'value'
-                },
-                color: '#fff',
-                series: [{
-                    data: [820, 932, 901, 934, 1290, 1330, 1320],
-                    type: 'line',
-                    areaStyle: {}
-                }]
+
             },
         }
     }
@@ -170,25 +157,75 @@ export default class HomeScrollView extends Component<Props> {
         })
         return obj
     }
-    onPress = (e) => {
-        console.log(123)
+
+    renderChartsData(list) {
+        // console.log(list)
+        const [Xdata,seriesData] = [[],[]]
+        for (let x  in list) {
+            Xdata.push(list[x].week)
+            seriesData.push((this.renderNumber(list[x].high) + this.renderNumber(list[x].low)) / 2)
+        }
+        this.setState({
+            option1: {              //  图表数据
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: Xdata,
+                    nameGap:30
+                },
+                textStyle:{
+                    color:'#fff',
+                    fontSize:18
+                },
+                yAxis: {
+                    show: false
+                },
+                color: 'rgba(255,255,255,.5)',
+                series: [{
+                    data: seriesData,
+                    type: 'line',
+                    smooth: true,
+                    areaStyle: {}
+                }],
+                tooltip:{
+                    trigger:'axis',
+                    axisPointer:{
+
+                    }
+                },
+            }
+        })
+        // console.log(Xdata,seriesData)
     }
+
     renderCharts() {
-        return <View><Echarts ref="echarts1" option={this.state.option1} onPress={this.onPress} height={300} /></View>
+        return (
+            <ScrollView
+                horizontal={true}
+                showsHorizontalScrollIndicator={true}
+                style={{flex:1,height:250}}
+            >
+                <View style={{width:1500,height:250}}>
+                    <Echarts ref="echarts1" option={this.state.option1} height={250} />
+                </View>
+            </ScrollView>
+        )
     }
 
     componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
-        console.log(this.props.Items)
-        this.state.weatherList.length < 1 && this.props.Items ? this.setState({weatherList:this.props.Items.data.forecast.slice(0,7)}) : null
+        // console.log(this.props.Items)
+        // this.state.weatherList.length < 1 && this.props.Items ? this.setState({weatherList:this.props.Items.data.forecast.slice(0,7)}) : null
+        !this.state.option1.xAxis && this.props.Items ? this.renderChartsData(this.props.Items.data.forecast) : null
     }
 
     render () {
         const data = this.props.Items
-        // console.log(Weather,data.data.forecast[0].type)
+        // console.log(data)
         return (
             <ScrollView
                 style={{flex:1}}
                 onScroll={e => this.onScroll(e)}
+                scrollEventThrottle={1}
                 onScrollBeginDrag={e => this.BeginScroll(e)}
                 onScrollEndDrag={e => this.EndScroll(e)}
                 ref={'scrollView'}
@@ -216,22 +253,24 @@ export default class HomeScrollView extends Component<Props> {
                                 </View>
                                  <Text style={styles.h1} ref={'title'}>{data.data.wendu}°</Text>
                             </View>
-                            <View style={{backgroundColor:'rgba(0,0,0,.5)',paddingHorizontal: 10,borderRadius:5}}>
+                            <View style={{backgroundColor:'rgba(0,0,0,.5)',paddingHorizontal: 10,borderRadius:5,flex:1}}>
                                 <View style={styles.titleView}>
                                     <Text style={styles.title}>预报</Text>
                                 </View>
                                 {this.renderCharts()}
-                                {
-                                    this.state.weatherList.length > 0 ?
-                                        this.renderWeatherList(this.state.weatherList)
-                                        : <ActivityIndicator size="large" color={'#fff'}></ActivityIndicator>
-                                }
+                                <Animated.View style={{height:this.state.fadeHeight,overflow:'hidden'}}>
+                                    {this.renderWeatherList(data.data.forecast)}
+                                </Animated.View>
                                 <View style={{flexDirection:'row',marginVertical: 10}}>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            this.setState({
-                                                weatherList:data.data.forecast.slice(0,7)
-                                            })
+                                            Animated.timing(                       // 随时间变化而执行动画
+                                                this.state.fadeHeight,            // 动画中的变量值
+                                                {
+                                                    toValue: 350,                        // 初始高度350
+                                                    duration: 800,                   // 让动画持续一段时间
+                                                }
+                                            ).start();
                                         }}
                                     >
                                         <Text style={styles.bottomViewText}>7天</Text>
@@ -239,9 +278,13 @@ export default class HomeScrollView extends Component<Props> {
                                     <Text style={{color:'#fff',fontSize:14,marginHorizontal:10}}>|</Text>
                                     <TouchableOpacity
                                         onPress={() => {
-                                            this.setState({
-                                                weatherList:data.data.forecast.slice(0,14)
-                                            })
+                                            Animated.timing(                       // 随时间变化而执行动画
+                                                this.state.fadeHeight,            // 动画中的变量值
+                                                {
+                                                    toValue: 750,                        // 完整高度750
+                                                    duration: 800,                   // 让动画持续一段时间
+                                                }
+                                            ).start();
                                         }}
                                     >
                                         <Text style={styles.bottomViewText}>14天</Text>
@@ -254,7 +297,6 @@ export default class HomeScrollView extends Component<Props> {
                         </View>
                         : null
                 }
-
             </ScrollView>
         )
     }
