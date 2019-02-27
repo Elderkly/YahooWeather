@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import {StyleSheet, Text,TouchableOpacity,ImageBackground,View,Dimensions,AsyncStorage} from 'react-native';
 import NavigationBar from '../../common/NavigationBar'
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Drawer, ListRow ,Button } from 'teaset';
+import { Drawer, ListRow ,Button,Toast} from 'teaset';
 import HttpRequest from '../../common/HttpRequest'
 import ScrollView from './ScrollView'
 import {getNavigationBarHeight,getRandomImg} from '../../common/util'
@@ -70,7 +70,7 @@ export default class Home extends Component<Props> {
     //  写入图片缓存
     setBgImgUrl(url){
         AsyncStorage.setItem('bgImg',JSON.stringify({url:url,Time:new Date().getTime()}),error => {
-            !error ? this.setState({imgUrl:url}) : console.log('写入缓存失败',error)
+            !error ? (this.setState({imgUrl:url}),Toast.message('刷新成功')) : console.log('写入缓存失败',error)
         })
     }
 
@@ -83,7 +83,7 @@ export default class Home extends Component<Props> {
                 const time = (new Date().getTime() - data.Time)  / 1000 / 60 % 60
                 console.log('距离上一次刷新背景图片已经过去',time,'分钟')
                 if (time > 5) {
-                    console.log('刷新图片')
+                    Toast.message('启动自动刷新');
                     getRandomImg()
                         .then(res=>{
                             this.setState({imgUrl:res})
@@ -91,6 +91,7 @@ export default class Home extends Component<Props> {
                         })
                         .catch(e => {
                             console.log('图片请求失败',e)
+                            Toast.message('获取图片失败,请稍后再试');
                             this.setState({imgUrl:url})
                         })
                 } else {

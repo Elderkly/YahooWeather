@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, Text,TouchableOpacity,View,ScrollView,Dimensions,RefreshControl,Animated} from 'react-native';
 import {getNavigationBarHeight,getRandomImg} from '../../common/util'
+import { Toast} from 'teaset';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Weather} from '../../assets/json/weather'
 import {Echarts, echarts} from 'react-native-secharts';
@@ -76,45 +77,6 @@ export default class HomeScrollView extends Component<Props> {
 
             }
         }
-
-        // console.log('速度',velocity)
-        // console.log('移动距离',Move)
-        // console.log('方向',ScrollAdsorbent)
-        // console.log('位置',contentOffset,'中间高度',this.state.middleHeight)
-
-
-
-        // if (ScrollAdsorbent === 'bottom') { //  向下滚动
-        //     if (velocity > -2 && Move < ViewHeight * 0.4) { //  如果滚动距离小于40%并且滚动速度小于2则回退滚动
-        //         this.refs.scrollView.scrollTo({y:0,animated:true})
-        //     }else if (Move < ViewHeight * 0.9 && velocity > -8) {   //  否则吸附在标题位置
-        //         this.refs.title.measure((fx, fy, width, height, px, py) => {
-        //             this.setState({middleHeight:ViewHeight - height})
-        //             this.refs.scrollView.scrollTo({y:ViewHeight - height,animated:true})
-        //         })
-        //         this.setState({ScrollAdsorbent:'top'})
-        //     }else if ( velocity < -8) { //  如果速度大于8则不需要吸附
-        //         this.setState({ScrollAdsorbent:'top'})
-        //     }
-        // } else {    //  向上滚动
-        //     if (velocity < 4 && Move < 0 && (this.state.middleHeight - contentOffset) < 200) { //  向上滚但速度小于2则回退滚动
-        //         this.refs.scrollView.scrollTo({y:this.state.middleHeight,animated:true})
-        //     /*
-        //     * contentOffset < this.state.middleHeight 滚动高度小于中间高度 即向上滚
-        //     * */
-        //     }else if ((contentOffset < this.state.middleHeight) ||
-        //         (velocity > 8 && Move < -150) ||
-        //         (contentOffset > this.state.middleHeight && Move < -50 && velocity > 4.5))  {     //  滚回到最顶部
-        //         this.refs.scrollView.scrollTo({y:0,animated:true})
-        //         this.setState({ScrollAdsorbent:'bottom'})
-        //     } else {
-        //         // console.log('缺省判断')
-        //         // console.log('速度',e.nativeEvent.velocity.y)
-        //         // console.log('移动距离',Move)
-        //         // console.log('方向',ScrollAdsorbent)
-        //         // console.log('位置',contentOffset,'中间高度',this.state.middleHeight)
-        //     }
-        // }
     }
     _onRefresh = () => {
         this.setState({
@@ -129,6 +91,7 @@ export default class HomeScrollView extends Component<Props> {
             })
             .catch(e => {
                 console.log('图片请求失败',e)
+                Toast.message('图片获取失败,请稍后再试')
                 this.setState({
                     refreshing:false
                 })
@@ -220,7 +183,7 @@ export default class HomeScrollView extends Component<Props> {
 
     render () {
         const data = this.props.Items
-        // console.log(data)
+        console.log(data)
         return (
             <ScrollView
                 style={{flex:1}}
@@ -253,7 +216,7 @@ export default class HomeScrollView extends Component<Props> {
                                 </View>
                                  <Text style={styles.h1} ref={'title'}>{data.data.wendu}°</Text>
                             </View>
-                            <View style={{backgroundColor:'rgba(0,0,0,.5)',paddingHorizontal: 10,borderRadius:5,flex:1}}>
+                            <View style={styles.items_box}>
                                 <View style={styles.titleView}>
                                     <Text style={styles.title}>预报</Text>
                                 </View>
@@ -291,8 +254,33 @@ export default class HomeScrollView extends Component<Props> {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={{backgroundColor:'rgba(255,255,225,7)',height:500,}}>
-                                <Text>789</Text>
+                            <View style={styles.items_box}>
+                                <View style={styles.titleView}>
+                                    <Text style={styles.title}>详细信息</Text>
+                                </View>
+                                <View style={styles.items_details}>
+                                    <View style={[styles.details_box,{alignItems:'center',justifyContent:'center'}]}>
+                                        <Icon name={Weather[data.data.forecast[0].type]} style={{fontSize: 60}} color={'#fff'}/>
+                                    </View>
+                                    <View style={styles.details_box}>
+                                        <View style={styles.details_items}>
+                                            <Text style={styles.de_items_text}>体感温度</Text>
+                                            <Text style={styles.de_items_text}>{data.data.wendu}°</Text>
+                                        </View>
+                                        <View style={styles.details_items}>
+                                            <Text style={styles.de_items_text}>湿度</Text>
+                                            <Text style={styles.de_items_text}>{data.data.shidu}</Text>
+                                        </View>
+                                        <View style={styles.details_items}>
+                                            <Text style={styles.de_items_text}>空气质量</Text>
+                                            <Text style={styles.de_items_text}>{data.data.quality}</Text>
+                                        </View>
+                                        <View style={[styles.details_items,{borderBottomWidth:0}]}>
+                                            <Text style={styles.de_items_text}>PM2.5</Text>
+                                            <Text style={styles.de_items_text}>{data.data.pm25}</Text>
+                                        </View>
+                                    </View>
+                                </View>
                             </View>
                         </View>
                         : null
@@ -316,7 +304,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 10
     },
     scrollView:{
-        paddingHorizontal:5
+        paddingHorizontal:5,
+        paddingBottom: 50,
     },
     RowView:{
         flexDirection:'row',
@@ -358,6 +347,30 @@ const styles = StyleSheet.create({
     bottomViewText:{
         fontSize:16,
         color:'#fff'
+    },
+    items_box:{
+        backgroundColor:'rgba(0,0,0,.5)',
+        paddingHorizontal: 10,
+        borderRadius:5,
+        flex:1,
+        marginBottom:10
+    },
+    items_details:{
+        flexDirection:'row',
+        paddingBottom:10
+    },
+    details_box:{
+        flex:1
+    },
+    details_items:{
+        flexDirection:'row',
+        padding:5,
+        justifyContent:'space-between',
+        borderBottomWidth:.5,
+        borderColor:'rgba(255,255,255,.8)',
+    },
+    de_items_text:{
+        fontSize:17,
+        color:'#fff'
     }
-
 })
