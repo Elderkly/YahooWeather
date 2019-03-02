@@ -8,9 +8,14 @@
  */
 
 import React, {Component} from 'react';
-import {StyleSheet, Text} from 'react-native';
+import {StyleSheet} from 'react-native';
 
 import codePush from './config/codePush'
+
+import {Provider} from 'react-redux'
+import configStore from './redux/Store'
+
+const store = configStore()
 
 // import DrawerNavigator from './config/badRouter'
 import DrawerNavigator from './config/AppRouter'
@@ -22,8 +27,11 @@ export default class App extends Component<Props> {
     }
 
     render() {
+        console.log(store)
         return (
-            <DrawerNavigator/>
+            <Provider store={store}>
+                <DrawerNavigator/>
+            </Provider>
         );
     }
 }

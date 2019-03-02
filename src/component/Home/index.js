@@ -8,12 +8,16 @@ import HttpRequest from '../../common/HttpRequest'
 import ScrollView from './ScrollView'
 import {getNavigationBarHeight,getRandomImg} from '../../common/util'
 
-type Props = {};
-export default class Home extends Component<Props> {
-    state = {
-        MaskOpacity:0,
-        imgUrl:'https://castle.womany.net/images/content/pictures/29362/content_womany_slide_340176_3496701_free_1432883330-23387-6973.jpg',
-        items:null
+import { connect } from 'react-redux';
+
+class Home extends Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            MaskOpacity:0,
+            imgUrl:'https://castle.womany.net/images/content/pictures/29362/content_womany_slide_340176_3496701_free_1432883330-23387-6973.jpg',
+            items:null
+        }
     }
 
     // 显示或隐藏侧边菜单(抽屉)
@@ -105,6 +109,7 @@ export default class Home extends Component<Props> {
     }
 
     render() {
+        console.log('Home',this.props)
         return (
             <ImageBackground
                 style={{width: '100%', height: '105%',position:'relative',bottom:this.state.MaskOpacity * 10}}
@@ -150,3 +155,20 @@ const styles = StyleSheet.create({
         color:'#fff'
     }
 });
+
+// 获取 state 变化
+const mapStateToProps = (state) => {
+    return {
+        // 获取 state 变化
+    }
+};
+
+// 发送行为
+const mapDispatchToProps = (dispatch) => {
+    return {
+        // 发送行为
+    }
+};
+
+// 进行第二层包装,生成的新组件拥有 接收和发送 数据的能力
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
