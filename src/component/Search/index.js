@@ -5,8 +5,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {getStatusBarHeight} from '../../common/util'
 import city from '../../assets/json/_city'
 
+import {Toast} from 'teaset';
+
+import { connect } from 'react-redux';
+import cityDao from '../../assets/cityDAO'
+
 type Props = {};
-export default class Search extends Component<Props> {
+class Search extends Component<Props> {
     state = {
         value:null,
         searchView:null
@@ -25,10 +30,25 @@ export default class Search extends Component<Props> {
             </View>
         )
     }
+    addCityData(data) {
+        // console.log({name:data.city_name,cityId:data.city_code})
+        cityDao.addCityData({name:data.city_name,cityId:data.city_code})
+            .then((res) => {
+                console.log(res)
+                Toast.message('添加成功')
+            })
+            .catch(e => {
+                Toast.message('添加失败')
+                console.log(e)
+            })
+    }
     renderCityDom(data) {
         return (
             <TouchableOpacity
                 style={styles.items}
+                onPress={() => {
+                    this.addCityData(data)
+                }}
             >
                 <Text style={{color:'#fff', fontSize: 17, fontWeight: '300'}}>{data.city_name}</Text>
             </TouchableOpacity>
@@ -45,9 +65,11 @@ export default class Search extends Component<Props> {
                 return
             }
             if (x === city.length - 1) {
-                setTimeout(() => {this.setState({
-                    searchView:null
-                })},600)
+                // setTimeout(() => {
+                    this.setState({
+                        searchView:null
+                    })
+                // },600)
                 return
             }
         }
@@ -85,6 +107,24 @@ export default class Search extends Component<Props> {
         );
     }
 }
+
+
+// 获取 state 变化
+const mapStateToProps = (state) => {
+    return {
+        REDUX_city: state,
+    }
+};
+
+// 发送行为
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onSetWeather: (city) => dispatch(setWeather(city)),
+    }
+};
+
+// 进行第二层包装,生成的新组件拥有 接收和发送 数据的能力
+export default connect(mapStateToProps, mapDispatchToProps)(Search);
 
 const styles = StyleSheet.create({
     content:{

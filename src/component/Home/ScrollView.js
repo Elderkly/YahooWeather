@@ -183,7 +183,7 @@ export default class HomeScrollView extends Component<Props> {
 
     render () {
         const data = this.props.Items
-        // console.log(data)
+        console.log(data)
         return (
             <ScrollView
                 style={{flex:1}}
