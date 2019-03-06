@@ -1,7 +1,7 @@
 export const initWeather = {
     city:[
         {
-            city: "深圳",
+            name: "深圳",
             cityId: "101280601"
         }
     ]

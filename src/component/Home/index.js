@@ -12,9 +12,6 @@ import { Drawer, ListRow ,Button,Carousel} from 'teaset'
 class Home extends Component {
     constructor(props){
         super(props)
-        this.state = {
-            city:null
-        }
     }
 
     // 显示或隐藏侧边菜单(抽屉)
@@ -56,27 +53,53 @@ class Home extends Component {
         cityDao.getCityData()
             .then(res => {
                 // console.log('city缓存',res)
-                this.setState({city:res})
+                this.props.onSetWeather(res)
             })
     }
     render() {
         console.log('Home',this.props)
         return (
-            <ViewPagerAndroid
+            // <ViewPagerAndroid
+            //     style={{flex:1}}
+            //     initialPage={0}
+            // >
+            //     {
+            //         this.state.city ? this.state.city.map((e,index) => (<View key={index}>
+            //             <Pages 
+            //                 {...this.props} 
+            //                 cloneDrawer={() => this.toggleMenu('left')}
+            //                 CITYDATA={e}
+            //             />
+            //         </View>)) : null
+            //     }
+            // </ViewPagerAndroid>
+
+            <Carousel
+                carousel={false}
+                cycle={false}
+                startIndex={0}
                 style={{flex:1}}
-                // carousel={false}
-                initialPage={0}
+                ref="Carousel"
             >
                 {
-                    this.state.city ? this.state.city.map((e,index) => (<View key={index}>
+                    this.props.REDUX_city.city ? this.props.REDUX_city.city.map((e,index) => (<View key={index}>
                         <Pages 
                             {...this.props} 
                             cloneDrawer={() => this.toggleMenu('left')}
                             CITYDATA={e}
+                            upDatePages={(index) => {
+                                console.log('****************',index)
+                                this.refs.Carousel.scrollToPage(index < 0 ? 0 : index)
+                            }}
                         />
                     </View>)) : null
                 }
-            </ViewPagerAndroid>
+            </Carousel>
+            // <Pages 
+            //     {...this.props} 
+            //     cloneDrawer={() => this.toggleMenu('left')}
+            //     CITYDATA={{name:'深圳',cityId: "101280601"}}
+            // />
             
         );
     }

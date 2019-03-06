@@ -21,7 +21,7 @@ export default class pages extends Component {
         return (
             <TouchableOpacity
                 style={{marginRight:15}}
-                onPress={() => this.props.navigation.navigate('Search') }
+                onPress={() => this.props.navigation.navigate('Search',{callback:this.props.upDatePages}) }
             >
                 <Icon name='ios-add' color={'#fff'} size={40} />
             </TouchableOpacity>
@@ -50,7 +50,7 @@ export default class pages extends Component {
             if (!error && res) {
                 const data = JSON.parse(res)
                 const time = (new Date().getTime() - data.Time)  / 1000 / 60 % 60
-                console.log('距离上一次刷新背景图片已经过去',time,'分钟')
+                // console.log('距离上一次刷新背景图片已经过去',time,'分钟')
                 if (time > 5) {
                     // Toast.message('启动自动刷新');
                     getRandomImg()
@@ -87,12 +87,6 @@ export default class pages extends Component {
                         leftButton={<TouchableOpacity
                             style={{marginLeft:15}}
                             onPress={() => {
-                                this.props.onSetWeather(
-                                    {
-                                        city: "深圳龙华",
-                                        cityId: "8888888"
-                                    }
-                                )
                                 this.props.cloneDrawer()
                             }}
                         >

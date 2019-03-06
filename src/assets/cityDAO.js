@@ -25,12 +25,14 @@ export default class CityDao {
             CityDao.getCityData()
                 .then(res => {
                     const CITY = res
+                    let Result = null
                     const index = CITY.findIndex(e => e.cityId === city.cityId)
-                    index === -1 ? CITY.push(city) : null
+                    city.cityId === '' ? reject('无城市ID') : null
+                    index === -1 && city.cityId != '' ? (CITY.splice(0,0,city),Result = 'add') : null
                     AsyncStorage.setItem('USER_CITY',JSON.stringify(CITY) ,error => {
                         // console.log('setAsync',error)
-                        console.log(this.CITY)
-                        !error ? resolve(CITY) : reject(e)
+                        // console.log(this.CITY)
+                        !error ? resolve({CITY:CITY,Result:Result,length:CITY.length,index}) : reject(e)
                     })
                 })
         })

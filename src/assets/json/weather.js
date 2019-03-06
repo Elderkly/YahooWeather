@@ -6,5 +6,6 @@ export const Weather = {
     '小雨':'cloud-rain',
     '中雨':'cloud-rain',
     '阵雨':'cloud-showers-heavy',
-    '大雨':'cloud-showers-heavy'
+    '大雨':'cloud-showers-heavy',
+    '暴雨':'cloud-showers-heavy',
 }

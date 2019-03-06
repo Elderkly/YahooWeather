@@ -4,7 +4,7 @@ import {StyleSheet, Text, TouchableOpacity, TextInput,View,ActivityIndicator} fr
 import Icon from 'react-native-vector-icons/Ionicons';
 import {getStatusBarHeight} from '../../common/util'
 import city from '../../assets/json/_city'
-
+import {setWeather} from '../../redux/Action'
 import {Toast} from 'teaset';
 
 import { connect } from 'react-redux';
@@ -34,8 +34,15 @@ class Search extends Component<Props> {
         // console.log({name:data.city_name,cityId:data.city_code})
         cityDao.addCityData({name:data.city_name,cityId:data.city_code})
             .then((res) => {
-                console.log(res)
-                Toast.message('添加成功')
+                // console.log(res.Result,res.CITY)
+                const {Result,CITY,index} = res
+                console.log(Result,CITY,index)
+                if (Result === 'add') {    
+                    Toast.message('添加成功')
+                    this.props.onSetWeather(CITY)
+                }
+                this.props.navigation.state.params.callback(index)
+                this.props.navigation.goBack()
             })
             .catch(e => {
                 Toast.message('添加失败')
