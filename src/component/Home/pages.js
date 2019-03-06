@@ -75,7 +75,7 @@ export default class pages extends Component {
     render() {
         return (
             <ImageBackground
-                style={{width: '100%', height: '105%',position:'relative',bottom:this.state.MaskOpacity * 10}}
+                style={{width: '100%', height: '105%',position:'relative',bottom:this.state.MaskOpacity * 10,paddingBottom: 30,}}
                 source={{uri:this.state.imgUrl}}
             >
                 <View style={{flex:1,backgroundColor:`rgba(0,0,0,${this.state.MaskOpacity})`}}>

@@ -18,9 +18,8 @@ export default class HomeScrollView extends Component<Props> {
             ScrollAdsorbent:'bottom',
             middleHeight:null,   //  滚动吸附
             fadeHeight:new Animated.Value(350), // 动画高度
-            option1: {              //  图表数据
-
-            },
+            option1: { },             //  图表数据
+            viewHeight:null  
         }
     }
     onScroll(e) {
@@ -103,8 +102,21 @@ export default class HomeScrollView extends Component<Props> {
     }
     renderWeatherList(list) {
         const obj = []
-        list.map(e => {
-            obj.push(
+        list.map((e,index) => {
+            const dom = index === 0 ? (
+                <View
+                    key={e.date}
+                    style={styles.items}
+                    ref="items"
+                >
+                    <Text style={styles.items_text}>{e.week}</Text>
+                    <View style={{flex:1,alignItems: 'center'}}>
+                        <Icon name={Weather[e.type]} style={{fontSize: 24}} color={'#fff'}/>
+                    </View>
+                    <Text style={styles.items_text}>{this.renderNumber(e.high)}°</Text>
+                    <Text style={styles.items_blue_text}>{this.renderNumber(e.low)}°</Text>
+                </View>
+            ) : (
                 <View
                     key={e.date}
                     style={styles.items}
@@ -117,6 +129,7 @@ export default class HomeScrollView extends Component<Props> {
                     <Text style={styles.items_blue_text}>{this.renderNumber(e.low)}°</Text>
                 </View>
             )
+            obj.push(dom)
         })
         return obj
     }
@@ -179,6 +192,7 @@ export default class HomeScrollView extends Component<Props> {
         // console.log(this.props.Items)
         // this.state.weatherList.length < 1 && this.props.Items ? this.setState({weatherList:this.props.Items.data.forecast.slice(0,7)}) : null
         !this.state.option1.xAxis && this.props.Items ? this.renderChartsData(this.props.Items.data.forecast) : null
+        this.props.Items && !this.state.viewHeight ? this.refs.items.measure((fx, fy, width, height) => {console.log('items高度:',height),this.setState({viewHeight:height})}) : null
     }
 
     render () {
@@ -230,7 +244,7 @@ export default class HomeScrollView extends Component<Props> {
                                             Animated.timing(                       // 随时间变化而执行动画
                                                 this.state.fadeHeight,            // 动画中的变量值
                                                 {
-                                                    toValue: 350,                        // 初始高度350
+                                                    toValue: this.state.viewHeight * 7,                        // 初始高度350
                                                     duration: 800,                   // 让动画持续一段时间
                                                 }
                                             ).start();
@@ -244,7 +258,7 @@ export default class HomeScrollView extends Component<Props> {
                                             Animated.timing(                       // 随时间变化而执行动画
                                                 this.state.fadeHeight,            // 动画中的变量值
                                                 {
-                                                    toValue: 750,                        // 完整高度750
+                                                    toValue: this.state.viewHeight * 15,                        // 完整高度750
                                                     duration: 800,                   // 让动画持续一段时间
                                                 }
                                             ).start();
