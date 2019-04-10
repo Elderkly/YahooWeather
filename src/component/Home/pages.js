@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StyleSheet, Text,TouchableOpacity,ImageBackground,View,Dimensions,AsyncStorage} from 'react-native'
+import {StyleSheet, Text,TouchableOpacity,ImageBackground,View,Dimensions,AsyncStorage,Animated} from 'react-native'
 
 import { Toast} from 'teaset'
 import ScrollView from './ScrollView'
@@ -12,7 +12,7 @@ export default class pages extends Component {
     constructor(props){
         super(props)
         this.state = {
-            MaskOpacity:0,
+            MaskOpacity:new Animated.Value(0),
             imgUrl:'https://castle.womany.net/images/content/pictures/29362/content_womany_slide_340176_3496701_free_1432883330-23387-6973.jpg',
             items:null
         }
@@ -75,10 +75,11 @@ export default class pages extends Component {
     render() {
         return (
             <ImageBackground
-                style={{width: '100%', height: '105%',position:'relative',bottom:this.state.MaskOpacity * 10,paddingBottom: 30,}}
+                style={{width: '100%', height: '105%',position:'relative',bottom:0 * 10,paddingBottom: 30,}}
                 source={{uri:this.state.imgUrl}}
             >
-                <View style={{flex:1,backgroundColor:`rgba(0,0,0,${this.state.MaskOpacity})`}}>
+                <Animated.View style={{backgroundColor:`rgb(0,0,0)`,position:'absolute',top:0,left:0,width:Dimensions.get('window').width ,height:Dimensions.get('window').height,opacity:this.state.MaskOpacity}} />
+                <View style={{flex:1}}>
                     <NavigationBar
                         title={this.props.CITYDATA.name}
                         style={{
@@ -98,12 +99,14 @@ export default class pages extends Component {
                         Items={this.state.items}
                         onScroll={scrollY => {
                             const ViewHeight = Dimensions.get('window').height - getNavigationBarHeight()
-                            this.setState({MaskOpacity:Math.min(scrollY / ViewHeight,.7) })
+                            this.state.MaskOpacity.setValue(Math.min(scrollY / ViewHeight,.7));
+                            // console.log(this.state.MaskOpacity)
+                            // this.setState({MaskOpacity:Math.min(scrollY / ViewHeight,.7) })
                             // console.log(Math.min(scrollY / ViewHeight,.7) )
                         }}
                         getImgUrl={url => {
-                           console.log(url)
-                           this.setBgImgUrl(url)
+                            console.log(url)
+                            this.setBgImgUrl(url)
                         }}
                     />
                 </View>
